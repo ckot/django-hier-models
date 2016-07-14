@@ -1,0 +1,148 @@
+
+body {
+    padding-top: 0;
+}
+
+.navbar {
+    margin: 0;
+}
+
+.breadcrumb {
+    margin: 0;
+}
+/*
+.apps {
+    padding: 0;
+    width: 100%;
+}
+
+.app-list {
+    width: 100%;
+    padding: 0;
+}
+*/
+/*
+.admin-index-panel {
+    margin-top: 20px;
+    padding: 0;
+    width: 100%;
+}
+
+.app-list-panel {
+    margin-top: 20px;
+    padding: 0;
+    width: 100%;
+}
+
+.change-list-panel {
+    margin-top: 20px;
+    padding: 0;
+    width: 100%;
+}
+
+.change-form-panel {
+    margin-top: 20px;
+    padding: 0;
+    width: 100%;
+}
+
+
+.panel-heading .pagination {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.admin-index-panel-title {
+    padding-top: 5px;
+}
+
+.app-list-panel-title {
+    padding-top: 5px;
+}
+
+.change-list-panel-title {
+    padding-top: 5px;
+}
+
+.change-form-panel-title {
+    padding-top: 5px;
+}
+
+
+.admin-index-panel-body {
+    padding-top: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-bottom: 0;
+}
+
+.app-list-panel-body {
+    padding-top: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-bottom: 0;
+}
+
+.change-list-panel-body {
+    padding-top: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-bottom: 0;
+}
+
+.change-form-panel-body {
+    padding: 0;
+}
+
+.form-row {
+    border-bottom: 0;
+}
+
+.app-table {
+    margin-bottom: 5px;
+}
+*/
+
+.inline-group .tabular tr td.original p  {
+    padding-bottom: 12px;
+    margin-bottom: 10px;
+}
+/*
+this should PROBABLY be given it's own class so as not to override all
+div.container's
+*/
+/*div.container {
+    width: 98%;
+}
+*/
+/*
+div.row {
+    margin: 0;
+}*/
+.icon-success {
+    color: #5CB85C;
+}
+
+
+.panel-heading .panel-toggle:after {
+    /* symbol for "opening" panels */
+    font-family: 'Glyphicons Halflings';  /* essential for enabling glyphicon */
+    content: "\e114";    /* adjust as needed, taken from bootstrap.css */
+    float: right;        /* adjust as needed */
+    color: black;         /* adjust as needed */
+}
+
+.panel-heading .panel-toggle.collapsed:after {
+    /* symbol for "collapsed" panels */
+    content: "\e080";    /* adjust as needed, taken from bootstrap.css */
+}
+
+/*.inline-table {
+    margin-bottom: 0;
+}
+
+.panel-body.tabular.inline-related {
+    padding: 0;
+}
+
+*/

@@ -1,0 +1,62 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_static hier_models_tags  %}
+{# tutalk_tags #}
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static "admin/css/dashboard.css" %}">
+{% endblock extrastyle %}
+
+{% block coltype %}colMS{% endblock coltype %}
+
+{% block bodyclass %}{{ block.super }} dashboard{% endblock bodyclass %}
+
+{% block navbar %}{{block.super}}{% endblock navbar %}
+
+{% block breadcrumbs %}<ul class="breadcrumb"><li>{% trans 'Home' %}</li></ul>{% endblock breadcrumbs %}
+
+{% block content-navbar-collapse %}{% endblock content-navbar-collapse%}
+
+{% block object-tools %}{% endblock object-tools %}
+
+{% block content %}
+<div id="content-main">
+{% if app_list %}
+
+  {% for app in app_list|top_level_apps %}
+      <div class="app-{{ app.app_label }} module">
+        <table>
+        <caption>
+            <a href="{{ app.app_url }}" class="section" title="{% blocktrans with name=app.name %}Models in the {{ name }} application{% endblocktrans %}">{{ app.name }}</a>
+        </caption>
+        {% for model in app.models %}
+          <tr class="model={{model.object_name|lower }}">
+            {% if model.admin_url %}
+              <th scope="row"><a href="{{ model.admin_url }}">{{ model.name }}</a></th>
+            {% else %}
+              <th scole="row">{{ model.name }}</th>
+            {% endif %}
+
+            {% if model.add_url %}
+              <td><a href="{{ model.add_url }}" class="addlink">{% trans 'Add' %}</a></td>
+            {% else %}
+              <td>&nbsp;</td>
+            {% endif %}
+
+            {% if model.admin_url %}
+              <td><a href="{{ model.admin_url }}" class="changelink">{% trans 'Change' %}</a></td>
+            {% else %}
+              <td>&nbsp;</td>
+            {% endif %}
+          </tr>
+        {% endfor %}
+      </table>
+      </div>
+    {% empty %}
+      <p>{% trans "You don't have permission to edit anything." %}</p>
+  {% endfor %}
+{% endif %}
+  </div>  <!-- content-main -->
+
+{% endblock content %}
+
+{% block sidebar %} {% endblock sidebar %}

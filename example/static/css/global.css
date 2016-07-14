@@ -1,0 +1,57 @@
+/* vertically smaller navbar to save screen real-estate */
+.navbar {
+    padding-bottom: 0;
+    margin-bottom: 10px;
+}
+
+.navbar-sm {
+    min-height: 40px;
+    max-height: 40px;
+}
+
+.navbar-sm .navbar {
+    min-height: 40px;
+    max-height: 40px;
+}
+
+.navbar-sm .navbar .navbar-brand {
+    padding: 0 12px;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 40px;
+}
+
+.navbar-sm .navbar .navbar-nav > li.active > a {
+    padding-top: 0;
+    padding-bottom: 0;
+    line-height: 40px;
+}
+
+.navbar-sm .navbar .navbar-nav > li > a {
+    padding-top: 0;
+    padding-bottom: 0;
+    line-height: 40px;
+}
+
+.navbar-sm .navbar .navbar-nav > li > p {
+    padding: 0 12px;
+    margin: 9px 15px;
+    font-size: 16px;
+}
+
+.navbar-sm .navbar .navbar-nav > li > button {
+    padding: 2px 12px;
+    margin: 8px 8px;
+}
+
+ol.breadcrumb {
+    padding: 5px;
+}
+
+.panel-body {
+    padding: 0;
+}
+
+.panel {
+    margin-bottom: 0;
+}
