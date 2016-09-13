@@ -1,8 +1,7 @@
 import os
 from setuptools import find_packages, setup
 
-__VERSION__ = '0.1.4'
-
+from hier_models import __version__
 
 with open(os.path.join(os.path.dirname(__file__), 'README.rst')) as readme:
     README = readme.read()
@@ -12,8 +11,8 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='django-hier-models',
-    version=__VERSION__,
-    packages=find_packages(),
+    version=__version__,
+    packages=find_packages(exclude=["example"]),
     include_package_data=True,
     license='Proprietary',  # example license
     description='foo',
