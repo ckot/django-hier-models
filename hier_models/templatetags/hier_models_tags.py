@@ -136,8 +136,9 @@ def use_hier_breadcrumbs(context):
         if 'app_label' in ctx:
             app_label = ctx['app_label']
     if app_label:
-        app_hier_model_settings = get_app_hier_models_settings(app_label)
-        use_hier = app_hier_model_settings.get("use_hier_breadcrumbs", False)
+        hm_settings = get_app_hier_models_settings(app_label)
+        if hm_settings:
+            use_hier = hm_settings.get("use_hier_breadcrumbs", False)
     return use_hier
 
 
