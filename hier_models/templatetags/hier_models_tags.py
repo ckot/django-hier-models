@@ -7,18 +7,19 @@ https://djangosnippets.org/snippets/2613/
 from __future__ import absolute_import
 # from copy import deepcopy
 import inspect
-import pprint
+# import pprint
 
 from django import template
 from django.apps import apps
 from django.conf import settings
-from django.contrib.admin.templatetags.admin_modify import submit_row
+from django.contrib.admin.templatetags.admin_modify \
+    import submit_row as orig_submit_row
 from django.core.urlresolvers import reverse
 from django.utils.html import format_html
 
 import hier_models.settings as hier_models_settings
 
-pp = pprint.PrettyPrinter(indent=4)
+# pp = pprint.PrettyPrinter(indent=4)
 register = template.Library()
 
 # hier_models_settings.disp_settings()
@@ -28,42 +29,38 @@ def get_app_hier_models_settings(app_label):
     """ returns either settings.HIER_MODELS[app_label] or default settings
     """
     # print "get_app_hier_models_settings(%s)" % app_label
-    default_settings = {
-        "top_level_models": {
-            "exclude": [],
-            "sort": False,
-            "order": []
-        },
-        "use_hier_breadcrumbs": False,
-        "models_on_admin_index": True,
-        "models_in_navbar_menu": True
-    }
-    tmp = settings.HIER_MODELS.get(app_label, None)
-    if tmp is not None:
-        return tmp
-        # overridden = deepcopy(default_settings)
-        # # print "found HIER_MODELS[%s]" % app_label
-        # # update default_settings, allowing for partial overrides
-        # tlm = tmp.pop("top_level_models", None)
-        # if tlm is not None:
-        #     # print "top_level_models:"
-        #     # pp.pprint(tlm)
-        #     for key in tlm:
-        #         # print "%s: %s\n" % (key, tlm[key])
-        #         overridden["top_level_models"][key] = tlm[key]
-        #     # print "end_top_level_models"
-        #     # pp.pprint(defaults)
-        # for key in tmp:
-        #     overridden[key] = tmp[key]
-        # pp.pprint(overridden)
-        # return overridden
-    else:
-        return default_settings
+    # default_settings = {
+    #     "models_whitelist": ["*"],
+    #     "models_blacklist": None,
+    #     "use_hier_breadcrumbs": False,
+    # }
+    return settings.HIER_MODELS.get(app_label, None)
+    # if tmp is not None:
+    #     return tmp
+    #     # overridden = deepcopy(default_settings)
+    #     # # print "found HIER_MODELS[%s]" % app_label
+    #     # # update default_settings, allowing for partial overrides
+    #     # tlm = tmp.pop("top_level_models", None)
+    #     # if tlm is not None:
+    #     #     # print "top_level_models:"
+    #     #     # pp.pprint(tlm)
+    #     #     for key in tlm:
+    #     #         # print "%s: %s\n" % (key, tlm[key])
+    #     #         overridden["top_level_models"][key] = tlm[key]
+    #     #     # print "end_top_level_models"
+    #     #     # pp.pprint(defaults)
+    #     # for key in tmp:
+    #     #     overridden[key] = tmp[key]
+    #     # pp.pprint(overridden)
+    #     # return overridden
+    # else:
+    #     return default_settings
 
-
+# can't override submit_row until I make changes so that this app
+# can be added AFTER admin in INSTALLED app
 @register.inclusion_tag('admin/submit_line.html', takes_context=True)
 def hier_submit_row(context):
-    ctx = submit_row(context)
+    ctx = orig_submit_row(context)
     ctx.update({
         'show_save_and_add_another': context.get(
             'show_save_and_add_another', ctx['show_save_and_add_another'])
@@ -76,26 +73,44 @@ def filter_app_def_models(app_def):
     """
     app_label = app_def['app_label']
     # print "filter_app_def_models:%s" % app_label
-    hier_models_settings = get_app_hier_models_settings(app_label)
+    all_models = app_def["models"]
+
+    hm_settings = get_app_hier_models_settings(app_label)
     # pp.pprint(hier_models_settings)
-    excludes = hier_models_settings['top_level_models']['exclude']
-    sort_models = hier_models_settings['top_level_models']['sort']
-    ordering = hier_models_settings['top_level_models']['order']
-    app_def_models = app_def['models']
-    keep = filter(lambda x: x['object_name'] not in excludes,
-                  app_def_models)
-    if sort_models and ordering:
-        keep_dct = {model['object_name']: model for model in keep}
-        ordered = [keep_dct[model_name] for model_name in ordering]
-    else:
-        ordered = keep
-    app_def['models'] = ordered
+    keep = all_models
 
-
-@register.simple_tag
-def app_verbose_name(app_label):
-    return apps.get_app_config(app_label).verbose_name
-
+    if hm_settings is not None:
+        if hm_settings["whitelist_models"] is not None and \
+            hm_settings["blacklist_models"] is not None:
+            # nonsense - keep all models
+            pass
+        elif hm_settings["whitelist_models"] is None and \
+            hm_settings["blacklist_models"] is None:
+            # nonsense - keep all models
+            pass
+        elif hm_settings["whitelist_models"] is not None:
+            if "*" in hm_settings["whitelist_models"]:
+                # keep all models
+                pass
+            else:
+                wl = hm_settings["whitelist_models"]
+                keep = [mdl for mdl in all_models if mdl['object_name'] in wl]
+        elif hm_settings["blacklist_models"] is not None:
+            bl = hm_settings["blacklist_models"]
+            keep = [mdl for mdl in all_models if mdl['object_name'] not in bl]
+        # excludes = hm_settings['top_level_models']['exclude']
+    # sort_models = hm_settings['top_level_models']['sort']
+    # ordering = hm_settings['top_level_models']['order']
+    # app_def_models = app_def['models']
+    # keep = filter(lambda x: x['object_name'] not in excludes,
+    #               app_def_models)
+    # keep = [mdl for mdl in app_def_models if mdl['object_name'] not in excludes]
+    # if sort_models and ordering:
+    #     keep_dct = {model['object_name']: model for model in keep}
+    #     ordered = [keep_dct[model_name] for model_name in ordering]
+    # else:
+    #     ordered = keep
+    app_def['models'] = keep
 
 @register.filter
 def top_level_apps(app_list):
@@ -108,39 +123,6 @@ def top_level_apps(app_list):
 def top_level_models(app_models, app_def):
     filter_app_def_models(app_def)
     return app_def['models']
-
-
-@register.assignment_tag
-def hm_app_is_installed(app_label):
-    """returns boolean regarding whether an app labeled app_label is
-    installed
-    """
-    return apps.is_installed(app_label)
-
-
-@register.filter
-def list_models_in_navbar_menu(app_def):
-    """returns boolean regarding whether the current app's settings request
-    the listing of it's models in the navbar menu ('models_in_navbar_menu')
-    """
-    list_models = True
-    app_label = app_def['app_label']
-    app_hier_models_settings = get_app_hier_models_settings(app_label)
-    list_models = app_hier_models_settings["models_in_navbar_menu"]
-    return list_models
-
-
-@register.filter
-def list_models_on_admin_index(app_def):
-    """returns boolean regarding whether the current app's settings request
-    the listing of it's models on the admin index page
-    ('models_on_admin_index')
-    """
-    list_models = True
-    app_label = app_def['app_label']
-    app_hier_models_settings = get_app_hier_models_settings(app_label)
-    list_models = app_hier_models_settings["models_on_admin_index"]
-    return list_models
 
 
 @register.assignment_tag(takes_context=True)
@@ -237,3 +219,47 @@ def get_hier_breadcrumbs(context):
     breadcrumbs.append("%s:%s" %
                        (original.__class__.__name__, str(original)))
     return breadcrumbs
+
+
+# do I need the following tag???
+
+@register.simple_tag
+def app_verbose_name(app_label):
+    return apps.get_app_config(app_label).verbose_name
+
+# don't think this is necessary anymore
+#
+# @register.assignment_tag
+# def hm_app_is_installed(app_label):
+#     """returns boolean regarding whether an app labeled app_label is
+#     installed
+#     """
+#     return apps.is_installed(app_label)
+
+
+# these are project-specific and should go away
+#
+# @register.filter
+# def list_models_in_navbar_menu(app_def):
+#     """returns boolean regarding whether the current app's settings request
+#     the listing of it's models in the navbar menu ('models_in_navbar_menu')
+#     """
+#     list_models = True
+#     app_label = app_def['app_label']
+#     app_hier_models_settings = get_app_hier_models_settings(app_label)
+#     list_models = app_hier_models_settings["models_in_navbar_menu"]
+#     return list_models
+
+
+# @register.filter
+# def list_models_on_admin_index(app_def):
+#     """returns boolean regarding whether the current app's settings request
+#     the listing of it's models on the admin index page
+#     ('models_on_admin_index')
+#     """
+#     list_models = True
+#     app_label = app_def['app_label']
+#     app_hier_models_settings = get_app_hier_models_settings(app_label)
+#     list_models = app_hier_models_settings["models_on_admin_index"]
+#     return list_models
+
